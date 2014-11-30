@@ -16,13 +16,11 @@
   :group 'my/dotemacs)
 
 
-(defun my/increase-company-async-timeout (&optional time)
-  "Increases the company timeout to 10 seconds.
-   If called with prefix it will ask for the new prefix"
-  (interactive "P")
-  (if time
-      (setq-company-async-timeout (read-from-minibuffer "Timeout in seconds: "))
-    (setq company-async-timeout 10)))
+(defun my/increase-company-async-timeout (time)
+  "Increases the company timeout to the given value in seconds."
+  (interactive "nNew timeout: ")
+  (setq company-async-timeout time))
+
 
 ;; Some defaults
 (setq company-idle-delay 0.2

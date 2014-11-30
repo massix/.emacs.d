@@ -23,7 +23,7 @@
                   (getenv "PATH"))))
 
 (defun ke/notify (text)
-  (interactive "s")
+  (interactive "sInsert the text of the notification: ")
   (when ke/naughty-notifier-active
     (let ((command (format
                     "echo \"naughty.notify({ text = \\\"%s\\\", timeout = 10 })\" | $(which awesome-client)" text)))
@@ -60,7 +60,7 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
 
 (defun ke/compile (argument &optional parallel-jobs silent alternative-compiler pre-make)
   "KE Compilation System"
-  (interactive "s")
+  (interactive "sTarget: ")
   (ke/setup-path)
   (let* ((couple (ke/find-root-dir (file-name-directory buffer-file-name) ".bzr"))
          (full-path (concat "/" (car couple) "/.release/" (cdr couple))))
