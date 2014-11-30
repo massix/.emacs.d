@@ -59,22 +59,21 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
         (ke/notify (format "Compilation is over ['%s']" (ke/trim-string arg1)))))
 
 (defun ke/compile (argument &optional parallel-jobs silent alternative-compiler pre-make)
-  "KE Compilation System"
+  "KE Compilation System, calls 'compile without cluttering the default values"
   (interactive "sTarget: ")
   (ke/setup-path)
   (let* ((couple (ke/find-root-dir (file-name-directory buffer-file-name) ".bzr"))
-         (full-path (concat "/" (car couple) "/.release/" (cdr couple))))
-    (setq compile-command
-          (concat pre-make " make -C \"\""
-                  full-path
-                  "\" "
-                  (when parallel-jobs (concat "-j" (number-to-string parallel-jobs)))
-                  " "
-                  (when silent "--silent")
-                  " "
-                  (when alternative-compiler (concat "CXX=\"" alternative-compiler "\""))
-                  " "
-                  argument))
+         (full-path (concat "/" (car couple) "/.release/" (cdr couple)))
+         (compile-command (concat pre-make " make -C \"\""
+                                  full-path
+                                  "\" "
+                                  (when parallel-jobs (concat "-j" (number-to-string parallel-jobs)))
+                                  " "
+                                  (when silent "--silent")
+                                  " "
+                                  (when alternative-compiler (concat "CXX=\"" alternative-compiler "\""))
+                                  " "
+                                  argument)))
     (call-interactively 'compile)
     (ke/reset-path)))
 
