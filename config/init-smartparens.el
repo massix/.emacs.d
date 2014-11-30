@@ -11,7 +11,7 @@
 (setq sp-autoescape-string-quote nil)
 (setq sp-autoescape-string-quote-if-empty nil)
 
-(sp-use-smartparens-bindings)
+;; (sp-use-smartparens-bindings)
 (smartparens-global-mode t)
 
 (show-smartparens-global-mode t)

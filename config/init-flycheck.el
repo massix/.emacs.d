@@ -8,6 +8,6 @@
        (setq flycheck-checkers (delq 'html-tidy flycheck-checkers))
        (setq flycheck-standard-error-navigation nil))
 
-(global-flycheck-mode t)
+(global-flycheck-mode -1)
 
 (provide 'init-flycheck)

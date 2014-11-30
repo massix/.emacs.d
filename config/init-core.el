@@ -28,6 +28,10 @@
 ;; enable narrowing
 (put 'narrow-to-region 'disabled nil)
 
+;; enable down/upcase region
+(put 'downcase-region 'disabled nil)
+(put 'upcase-region 'disabled nil)
+
 ;; dired
 (require 'dired-x)
 
@@ -124,11 +128,10 @@
 (delete-selection-mode 1)
 
 (setq-default
+ c-default-style "linux"
  tab-width 4
- indent-tabs-mode nil
  c-basic-offset 4
- c-default-style "linux")
-
+ indent-tabs-mode nil)
 
 (defun my-find-file-check-large-file ()
   (when (> (buffer-size) (* 1024 1024))

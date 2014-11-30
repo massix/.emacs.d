@@ -62,3 +62,4 @@
  (lambda ()
    (dolist (module my/dotemacs-modules)
      (with-demoted-errors "##### INIT-ERROR ##### %s" (require module)))))
+

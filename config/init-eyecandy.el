@@ -37,28 +37,35 @@
 (sml/setup)
 (sml/apply-theme 'dark)
 
-
-(if (fboundp 'global-prettify-symbols-mode)
-    (progn
-      (global-prettify-symbols-mode)
-      (add-hook 'js2-mode-hook
-                (lambda ()
-                  (push '("function" . 955) prettify-symbols-alist)
-                  (push '("return" . 8592) prettify-symbols-alist))))
+(when (fboundp 'global-prettify-symbols-mode)
   (progn
-    (require-package 'pretty-symbols)
-    (require 'pretty-symbols)
-    (diminish 'pretty-symbols-mode)
-    (add-to-list 'pretty-symbol-categories 'js)
-    (add-to-list 'pretty-symbol-patterns '(955 js "\\<function\\>" (js2-mode)))
-    (add-to-list 'pretty-symbol-patterns '(8592 js "\\<return\\>" (js2-mode)))
-    (add-hook 'find-file-hook 'pretty-symbols-mode)))
-
+    (global-prettify-symbols-mode)))
+    ;; (add-hook 'c-mode-hook
+    ;;           (lambda ()
+    ;;             (push '("return" . 8592) prettify-symbols-alist)
+    ;;             (push '("<="     . ?≤) prettify-symbols-alist)
+    ;;             (push '(">="     . ?≥) prettify-symbols-alist)
+    ;;             (push '("fn"     . ?𝑓) prettify-symbols-alist)
+    ;;             (push '("!="     . ?≢) prettify-symbols-alist)
+    ;;             (push '("!="     . ?≢) prettify-symbols-alist)
+    ;;             (push '("=="     . ?≡) prettify-symbols-alist)
+    ;;             (push '("this"   . ?◎) prettify-symbols-alist)
+    ;;             (push '("->"     . ?⇝) prettify-symbols-alist)))
+    ;; (add-hook 'c++-mode-hook
+    ;;           (lambda ()
+    ;;             (push '("return" . 8592) prettify-symbols-alist)
+    ;;             (push '("<="     . ?≤) prettify-symbols-alist)
+    ;;             (push '(">="     . ?≥) prettify-symbols-alist)
+    ;;             (push '("fn"     . ?𝑓) prettify-symbols-alist)
+    ;;             (push '("!="     . ?≢) prettify-symbols-alist)
+    ;;             (push '("!="     . ?≢) prettify-symbols-alist)
+    ;;             (push '("=="     . ?≡) prettify-symbols-alist)
+    ;;             (push '("this"   . ?◎) prettify-symbols-alist)
+    ;;             (push '("->"     . ?⇝) prettify-symbols-alist)))))
 
 (require-package 'color-identifiers-mode)
 (global-color-identifiers-mode)
 (diminish 'color-identifiers-mode)
-
 
 (require-package 'highlight-symbol)
 (setq highlight-symbol-idle-delay 0.3)
@@ -72,11 +79,11 @@
 
 
 ;; this is pretty slow on big files
-;; (require-package 'indent-guide)
-;; (require 'indent-guide)
-;; (setq indent-guide-recursive t)
-;; (add-to-list 'indent-guide-inhibit-modes 'package-menu-mode)
-;; (indent-guide-global-mode)
+(require-package 'indent-guide)
+(require 'indent-guide)
+(setq indent-guide-recursive t)
+(add-to-list 'indent-guide-inhibit-modes 'package-menu-mode)
+(indent-guide-global-mode 1)
 
 
 (add-hook 'find-file-hook 'hl-line-mode)
