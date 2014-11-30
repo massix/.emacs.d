@@ -27,15 +27,16 @@
 
 
 (require-package 'heroku-theme)
+(require-package 'zenburn-theme)
 (require-package 'smart-mode-line)
 (require 'smart-mode-line)
 (setq sml/show-client t)
 (setq sml/show-eol t)
 (setq sml/show-frame-identification t)
 
-(load-theme 'heroku)
+(load-theme 'zenburn)
 (sml/setup)
-(sml/apply-theme 'dark)
+(sml/apply-theme 'respectful)
 
 (when (fboundp 'global-prettify-symbols-mode)
   (progn
