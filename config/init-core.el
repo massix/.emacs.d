@@ -101,6 +101,10 @@
 (defalias 'yes-or-no-p 'y-or-n-p)
 (xterm-mouse-mode t)
 
+;; Scroll half-page with C-v and M-v instead of the full page
+(require 'view)
+(global-set-key (kbd "C-v") 'View-scroll-half-page-forward)
+(global-set-key (kbd "M-v") 'View-scroll-half-page-backward)
 
 (set-terminal-coding-system 'utf-8)
 (set-keyboard-coding-system 'utf-8)

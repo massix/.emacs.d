@@ -16,7 +16,8 @@
 (require 'project-explorer)
 (after 'project-explorer
   (setq pe/cache-directory (concat my/dotemacs-cache-directory "project-explorer"))
-  (setq pe/omit-regex (concat pe/omit-regex "\\|^node_modules$")))
+  (setq pe/omit-regex (concat pe/omit-regex "\\|^node_modules$"))
+  (setq pe/side 'right))
 
 
 (require-package 'ace-jump-mode)
