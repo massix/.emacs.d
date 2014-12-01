@@ -24,4 +24,4 @@ if [[ $(basename $0) = "efile" ]]; then
 fi
 
 # Avoid running the emacsclient for ecd and efile `functions'
-[[ ! -z ${arguments} ]] && /usr/local/bin/emacsclient -a \"\" ${arguments} "$@"
+[[ ! -z ${arguments} ]] && /usr/local/bin/emacsclient -a "" ${arguments} "$@"
