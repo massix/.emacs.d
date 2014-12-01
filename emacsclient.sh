@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+EMACSCLIENT=$(which emacsclient)
 
 # Depending on the link used, open either the gui or the terminal
 if [[ $(basename $0) = "e" ]]; then
@@ -24,4 +25,4 @@ if [[ $(basename $0) = "efile" ]]; then
 fi
 
 # Avoid running the emacsclient for ecd and efile `functions'
-[[ ! -z ${arguments} ]] && /usr/local/bin/emacsclient -a \"\" ${arguments} "$@"
+[[ ! -z ${arguments} ]] && ${EMACSCLIENT} -a \"\" ${arguments} "$@"

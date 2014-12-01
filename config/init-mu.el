@@ -1,9 +1,10 @@
 ;; init-mu.el -- Mu and related options
-(add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu4e")
-(require-package 'mu4e-maildirs-extension)
 
-(require 'mu4e)
-(require 'mu4e-maildirs-extension)
+(defcustom my/mu4e-site-lisp-dir
+  "/usr/local/share/emacs/site-lisp/mu4e"
+  "Where to find the mu4e.el file"
+  :group 'my/dotemacs
+  :type 'string)
 
 (defcustom my/mu4e-maildir
   (expand-file-name "~/mail/gmail/")
@@ -68,6 +69,11 @@
   :group 'my/dotemacs
   :type 'function)
 
+(add-to-list 'load-path my/mu4e-site-lisp-dir)
+
+(require 'mu4e)
+(require 'mu4e-maildirs-extension)
+(require-package 'mu4e-maildirs-extension)
 
 (setq mu4e-maildir          my/mu4e-maildir
       mu4e-drafts-folder    my/mu4e-drafts-folder
