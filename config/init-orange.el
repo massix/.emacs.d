@@ -42,17 +42,27 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
 (defun ke/find-root-dir (path look-for-member &optional discarded)
   "Recursively finds for a directory in the given path"
   (let* ((split-path (split-string path "/"))
-         (new-split-path (butlast split-path 1)))
+         (new-split-path (butlast split-path)))
     (cond
-     ((string-equal "~" path) '(nil discarded))
-     ((string-equal "/" path) '(nil discarded))
-     ((null path) '(nil discarded))
-     ((member look-for-member (directory-files path))
-      (cons path (mapconcat 'identity discarded "/")))
+     ((string-equal "~" path) `(nil ,discarded))
+     ((string-equal "/" path) `(nil ,discarded))
+     ((null path) `(nil ,discarded))
+     ((and (file-exists-p path)
+           (member look-for-member (directory-files path))) `(,path ,discarded))
      (t (ke/find-root-dir
          (mapconcat 'identity new-split-path "/")
          look-for-member
-         (last split-path 1))))))
+         (concat (car (last split-path))
+                 (when discarded "/")
+                 discarded))))))
+
+(defun ke/find-where-to-compile (path)
+  "Finds the topmost .bzr and then it descends in the .release subfolder
+   to look for a suitable Makefile to use"
+  (let ((root-path (ke/find-root-dir path ".bzr")))
+    (car (ke/find-root-dir
+          (concat (car root-path) "/.release/" (car (cdr root-path)))
+          "Makefile"))))
 
 (setq compilation-finish-functions
       (lambda (arg0 arg1)
@@ -62,8 +72,7 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
   "KE Compilation System, calls 'compile without cluttering the default values"
   (interactive "sTarget: ")
   (ke/setup-path)
-  (let* ((couple (ke/find-root-dir (file-name-directory buffer-file-name) ".bzr"))
-         (full-path (concat (car couple) "/.release/" (cdr couple)))
+  (let* ((full-path (ke/find-where-to-compile (file-name-directory buffer-file-name)))
          (compile-command (concat pre-make " make -C \""
                                   full-path
                                   "\" "
