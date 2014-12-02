@@ -72,7 +72,9 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
   "KE Compilation System, calls 'compile without cluttering the default values"
   (interactive "sTarget: ")
   (ke/setup-path)
-  (let* ((full-path (ke/find-where-to-compile (file-name-directory buffer-file-name)))
+  (let* ((full-path (ke/find-where-to-compile (if (eq major-mode 'dired-mode)
+                                                  (dired-current-directory)
+                                                (file-name-directory buffer-file-name))))
          (compile-command (concat pre-make " make -C \""
                                   full-path
                                   "\" "
@@ -94,6 +96,12 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
     (concat "~/dev/Bear/build/src/bear -o " full-path "/compile_commands.json -- ")))
 
 (require 'cc-mode)
+(require 'dired-mode)
+(define-key dired-mode-map (kbd "C-c k k")
+  (lambda ()
+    (interactive)
+    (ke/compile "all" 2 t)))
+
 (define-key c-mode-base-map (kbd "C-c k m")
   (lambda (&optional prefix)
     (interactive "P")
