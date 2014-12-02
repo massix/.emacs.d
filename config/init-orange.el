@@ -11,11 +11,8 @@
   "Set this to the location of your Bear binary"
   :group 'my/dotemacs)
 
-(defvar ke/original-path)
-
 (defun ke/setup-path ()
   "Sets the KE's path"
-  (setq ke/original-path (getenv "PATH"))
   (setenv "PATH"
           (concat "/ke/local/toolchain3-x86_64-nptl/bin:"
                   "/ke/local/toolchain3-x86_64-nptl/tools/bin:"
@@ -26,6 +23,13 @@
                   "/ke/local/toolchain3-x86_64-nptl/tools/java/jdk1.6.0_13/bin:"
                   "/ke/local/toolchain3-x86_64-nptl/tools/java/ant-1.7.0/bin:"
                   (getenv "PATH"))))
+
+(defmacro ke/with-compilation-path (&rest body)
+  (let ((current-path (getenv "PATH")))
+    (ke/setup-path)
+    `(unwind-protect
+         (progn ,@body)
+       (setenv "PATH" ,current-path))))
 
 (defun ke/notify (text)
   (interactive "sInsert the text of the notification: ")
@@ -39,10 +43,6 @@
   "Remove white spaces in beginning and ending of STRING.
 White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
   (replace-regexp-in-string "\\`[ \t\n]*" "" (replace-regexp-in-string "[ \t\n]*\\'" "" string)))
-
-(defun ke/reset-path ()
-  "Reset the path to the original one"
-  (when ke/original-path (setenv "PATH" ke/original-path)))
 
 (defun ke/find-root-dir (path look-for-member &optional discarded)
   "Recursively finds for a directory in the given path"
@@ -76,22 +76,22 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
 (defun ke/compile (argument &optional parallel-jobs silent alternative-compiler pre-make)
   "KE Compilation System, calls 'compile without cluttering the default values"
   (interactive "sTarget: ")
-  (ke/setup-path)
-  (let* ((full-path (ke/find-where-to-compile (if (eq major-mode 'dired-mode)
-                                                  (dired-current-directory)
-                                                (file-name-directory buffer-file-name))))
-         (compile-command (concat pre-make " make -C \""
-                                  full-path
-                                  "\" "
-                                  (when parallel-jobs (concat "-j" (number-to-string parallel-jobs)))
-                                  " "
-                                  (when silent "--silent")
-                                  " "
-                                  (when alternative-compiler (concat "CXX=\"" alternative-compiler "\""))
-                                  " "
-                                  argument)))
-    (call-interactively 'compile)
-    (ke/reset-path)))
+  (ke/with-compilation-path
+   (let* ((full-path (ke/find-where-to-compile (if (eq major-mode 'dired-mode)
+                                                   (dired-current-directory)
+                                                 (file-name-directory buffer-file-name))))
+          (compile-command (concat pre-make " make -C \""
+                                   full-path
+                                   "\" "
+                                   (when parallel-jobs (concat "-j" (number-to-string parallel-jobs)))
+                                   " "
+                                   (when silent "--silent")
+                                   " "
+                                   (when alternative-compiler (concat "CXX=\"" alternative-compiler "\""))
+                                   " "
+                                   argument)))
+     (call-interactively 'compile))))
+
 
 ;; Set the bear command
 (defun ke/generate-bear-command ()
