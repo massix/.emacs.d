@@ -6,6 +6,11 @@
   :group 'my/dotemacs
   :type 'boolean)
 
+(defcustom ke/bear-path
+  "~/dev/Bear/build/src/bear"
+  "Set this to the location of your Bear binary"
+  :group 'my/dotemacs)
+
 (defvar ke/original-path)
 
 (defun ke/setup-path ()
@@ -89,38 +94,40 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
     (ke/reset-path)))
 
 ;; Set the bear command
-(defun ke/generate-bear-command (file)
+(defun ke/generate-bear-command ()
   "Return a compatible bear command for the buffer"
-  (let* ((couple (ke/find-root-dir (file-name-directory buffer-file-name) ".bzr"))
-         (full-path (concat "/" (car couple) "/.release/" (cdr couple))))
-    (concat "~/dev/Bear/build/src/bear -o " full-path "/compile_commands.json -- ")))
+  (let* ((full-path (ke/find-where-to-compile (if (eq major-mode 'dired-mode)
+                                                  (dired-current-directory)
+                                                (file-name-directory buffer-file-name)))))
+    (concat ke/bear-path " -o " full-path "/compile_commands.json -- ")))
 
 (require 'cc-mode)
-(require 'dired-mode)
 (define-key dired-mode-map (kbd "C-c k k")
-  (lambda ()
-    (interactive)
-    (ke/compile "all" 2 t)))
+  (lambda (&optional prefix)
+    (interactive "P")
+    (if prefix
+        (ke/compile "all" 2 nil nil (ke/generate-bear-command))
+      (ke/compile "all" 2 t))))
 
 (define-key c-mode-base-map (kbd "C-c k m")
   (lambda (&optional prefix)
     (interactive "P")
     (if prefix
-        (ke/compile "all" 2 nil nil (ke/generate-bear-command buffer-file-name))
+        (ke/compile "all" 2 nil nil (ke/generate-bear-command))
       (ke/compile "all" 2 t))))
 
 (define-key c-mode-base-map (kbd "C-c k c")
   (lambda (&optional prefix)
     (interactive "P")
     (if prefix
-        (ke/compile "clean" 2 nil nil (ke/generate-bear-command buffer-file-name))
+        (ke/compile "clean" 2 nil nil (ke/generate-bear-command))
       (ke/compile "clean" 2 t))))
 
 (define-key c-mode-base-map (kbd "C-c k t")
   (lambda (&optional prefix)
     (interactive "P")
     (if prefix
-        (ke/compile "check" 2 nil nil (ke/generate-bear-command buffer-file-name))
+        (ke/compile "check" 2 nil nil (ke/generate-bear-command))
       (ke/compile "check" 2 t))))
 
 (define-key c-mode-base-map (kbd "C-c k d")
@@ -132,9 +139,5 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
 ;; Special compilation command to generate the .clang_complete file
 (define-key c-mode-base-map (kbd "C-c k 0 m")
   (lambda () (interactive) (ke/compile "all" 2 nil "~/.emacs.d/cc_args.py $(which colorg++)")))
-
-(define-key c-mode-base-map (kbd "C-c k 1 m")
-  (lambda ()
-    (interactive) (ke/compile "all" 2 nil nil (ke/generate-bear-command buffer-file-name))))
 
 (provide 'init-orange)
