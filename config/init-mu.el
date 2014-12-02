@@ -72,8 +72,9 @@
 (add-to-list 'load-path my/mu4e-site-lisp-dir)
 
 (require 'mu4e)
-(require 'mu4e-maildirs-extension)
+
 (require-package 'mu4e-maildirs-extension)
+(require 'mu4e-maildirs-extension)
 
 (setq mu4e-maildir          my/mu4e-maildir
       mu4e-drafts-folder    my/mu4e-drafts-folder

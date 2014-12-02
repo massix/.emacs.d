@@ -52,7 +52,7 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
      (t (ke/find-root-dir
          (mapconcat 'identity new-split-path "/")
          look-for-member
-         (cons (car (last split-path 1)) discarded))))))
+         (last split-path 1))))))
 
 (setq compilation-finish-functions
       (lambda (arg0 arg1)
@@ -63,8 +63,8 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
   (interactive "sTarget: ")
   (ke/setup-path)
   (let* ((couple (ke/find-root-dir (file-name-directory buffer-file-name) ".bzr"))
-         (full-path (concat "/" (car couple) "/.release/" (cdr couple)))
-         (compile-command (concat pre-make " make -C \"\""
+         (full-path (concat (car couple) "/.release/" (cdr couple)))
+         (compile-command (concat pre-make " make -C \""
                                   full-path
                                   "\" "
                                   (when parallel-jobs (concat "-j" (number-to-string parallel-jobs)))
@@ -85,11 +85,26 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
     (concat "~/dev/Bear/build/src/bear -o " full-path "/compile_commands.json -- ")))
 
 (require 'cc-mode)
+(define-key c-mode-base-map (kbd "C-c k m")
+  (lambda (&optional prefix)
+    (interactive "P")
+    (if prefix
+        (ke/compile "all" 2 nil nil (ke/generate-bear-command buffer-file-name))
+      (ke/compile "all" 2 t))))
+
 (define-key c-mode-base-map (kbd "C-c k c")
-  (lambda () (interactive) (ke/compile "clean" 2 t)))
+  (lambda (&optional prefix)
+    (interactive "P")
+    (if prefix
+        (ke/compile "clean" 2 nil nil (ke/generate-bear-command buffer-file-name))
+      (ke/compile "clean" 2 t))))
 
 (define-key c-mode-base-map (kbd "C-c k t")
-  (lambda () (interactive) (ke/compile "check" 2 t)))
+  (lambda (&optional prefix)
+    (interactive "P")
+    (if prefix
+        (ke/compile "check" 2 nil nil (ke/generate-bear-command buffer-file-name))
+      (ke/compile "check" 2 t))))
 
 (define-key c-mode-base-map (kbd "C-c k d")
   (lambda () (interactive) (ke/compile "deb-main-deploy" 2 t)))

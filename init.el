@@ -54,8 +54,8 @@
     init-jabber
     init-override)
   "Modules to load with emacs"
-  :group 'my/dotemacs
-  :type 'list)
+  :group 'my/dotemacs)
+
 
 (add-to-list
  'after-init-hook
