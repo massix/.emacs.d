@@ -65,7 +65,7 @@
   (define-key c-mode-base-map (kbd "C-c r ]")       'rtags-location-stack-forward)
   (define-key c-mode-base-map (kbd "C-c r i")       'rtags-display-summary)
   (define-key c-mode-base-map (kbd "C-c r m")       'rtags-imenu)
-  (define-key c-mode-base-map (kbd "C-c r R")     'rtags-rename-symbol) ;; might be dangerous
+  (define-key c-mode-base-map (kbd "C-c r R")       'rtags-rename-symbol)
   (define-key c-mode-base-map (kbd "C-c r x")       'rtags-restart-process))
 
 ;; Set up Irony
