@@ -24,6 +24,12 @@
                   "/ke/local/toolchain3-x86_64-nptl/tools/java/ant-1.7.0/bin:"
                   (getenv "PATH"))))
 
+(defcustom ke/opinel-buffer-name "*Opinel Output*"
+  "The buffer name used for output of Opinel commands"
+  :group 'my/dotemacs)
+
+(defvar ke/opinel-environment nil)
+
 (defmacro ke/with-compilation-path (&rest body)
   (let ((current-path (getenv "PATH")))
     (ke/setup-path)
@@ -92,6 +98,27 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
                                    argument)))
      (call-interactively 'compile))))
 
+(defun ke/reset-opinel-environment (environment)
+  "Allows to reset the ke/opinel-environment variable"
+  (interactive "sEnvironment: ")
+  (setq ke/opinel-environment environment))
+
+(defun ke/run-opinel-command (command &optional filter)
+  "Run an opinel command using the stored ke/opinel-environment or
+   asking for one if it is not set"
+  (interactive "sCommand: ")
+  (let* ((ke/project-root (concat (car (ke/find-root-dir (file-name-directory buffer-file-name) ".bzr")) "/../"))
+         (ke/opinel-bin (concat ke/project-root "ke-opinel/src/opinel"))
+         (buffer (get-buffer-create ke/opinel-buffer-name)))
+    (if (eq nil ke/opinel-environment)
+        (setq ke/opinel-environment (read-from-minibuffer "Environment name: ")))
+    (with-current-buffer buffer
+      (async-shell-command (format "%s %s --env=%s %s"
+                                   ke/opinel-bin
+                                   (if filter (format "-g role:%s" filter) "")
+                                   ke/opinel-environment
+                                   command) buffer)
+      (read-only-mode))))
 
 ;; Set the bear command
 (defun ke/generate-bear-command ()
@@ -129,6 +156,9 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
     (if prefix
         (ke/compile "check" 2 nil nil (ke/generate-bear-command))
       (ke/compile "check" 2 t))))
+
+(define-key c-mode-base-map (kbd "C-c k o") 'ke/run-opinel-command)
+(define-key c-mode-base-map (kbd "C-c k r") 'ke/reset-opinel-environment)
 
 (define-key c-mode-base-map (kbd "C-c k d")
   (lambda () (interactive) (ke/compile "deb-main-deploy" 2 t)))
