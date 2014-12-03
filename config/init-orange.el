@@ -11,6 +11,11 @@
   "Set this to the location of your Bear binary"
   :group 'my/dotemacs)
 
+(defcustom ke/default-prefix
+  "\C-ck"
+  "Default prefix for KE specific commands"
+  :group 'my/dotemacs)
+
 (defun ke/setup-path ()
   "Sets the KE's path"
   (setenv "PATH"
@@ -146,21 +151,21 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
 (require 'cc-mode)
 
 ;; Dired mappings
-(define-key dired-mode-map (kbd "C-c k k") 'ke/compile)
-(define-key dired-mode-map (kbd "C-c k m") 'ke/compile-all)
-(define-key dired-mode-map (kbd "C-c k c") 'ke/compile-clean)
-(define-key dired-mode-map (kbd "C-c k t") 'ke/compile-check)
-(define-key dired-mode-map (kbd "C-c k d") 'ke/compile-deb-main-deploy)
-(define-key dired-mode-map (kbd "C-c k o") 'ke/run-opinel-command)
-(define-key dired-mode-map (kbd "C-c k r") 'ke/reset-opinel-environment)
+(define-key dired-mode-map (concat ke/default-prefix "k") 'ke/compile)
+(define-key dired-mode-map (concat ke/default-prefix "m") 'ke/compile-all)
+(define-key dired-mode-map (concat ke/default-prefix "c") 'ke/compile-clean)
+(define-key dired-mode-map (concat ke/default-prefix "t") 'ke/compile-check)
+(define-key dired-mode-map (concat ke/default-prefix "d") 'ke/compile-deb-main-deploy)
+(define-key dired-mode-map (concat ke/default-prefix "o") 'ke/run-opinel-command)
+(define-key dired-mode-map (concat ke/default-prefix "r") 'ke/reset-opinel-environment)
 
 ;; C/C++ mappings
-(define-key c-mode-base-map (kbd "C-c k k") 'ke/compile)
-(define-key c-mode-base-map (kbd "C-c k m") 'ke/compile-all)
-(define-key c-mode-base-map (kbd "C-c k c") 'ke/compile-clean)
-(define-key c-mode-base-map (kbd "C-c k t") 'ke/compile-check)
-(define-key c-mode-base-map (kbd "C-c k d") 'ke/compile-deb-main-deploy)
-(define-key c-mode-base-map (kbd "C-c k o") 'ke/run-opinel-command)
-(define-key c-mode-base-map (kbd "C-c k r") 'ke/reset-opinel-environment)
+(define-key c-mode-base-map (concat ke/default-prefix "k") 'ke/compile)
+(define-key c-mode-base-map (concat ke/default-prefix "m") 'ke/compile-all)
+(define-key c-mode-base-map (concat ke/default-prefix "c") 'ke/compile-clean)
+(define-key c-mode-base-map (concat ke/default-prefix "t") 'ke/compile-check)
+(define-key c-mode-base-map (concat ke/default-prefix "d") 'ke/compile-deb-main-deploy)
+(define-key c-mode-base-map (concat ke/default-prefix "o") 'ke/run-opinel-command)
+(define-key c-mode-base-map (concat ke/default-prefix "r") 'ke/reset-opinel-environment)
 
 (provide 'init-orange)
