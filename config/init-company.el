@@ -55,18 +55,18 @@
         rtags-display-current-error-as-message nil
         rtags-display-current-error-as-tooltip t
         rtags-display-summary-as-tooltip t)
-  (define-key c-mode-base-map (kbd "C-c r d") 'rtags-diagnostics)
-  (define-key c-mode-base-map (kbd "C-c r t") 'rtags-taglist)
-  (define-key c-mode-base-map (kbd "C-c r R") 'rtags-find-references-at-point)
-  (define-key c-mode-base-map (kbd "C-c r F") 'rtags-fix-fixit-at-point)
-  (define-key c-mode-base-map (kbd "C-c r f") 'rtags-find-symbol-at-point)
-  (define-key c-mode-base-map (kbd "C-c r v") 'rtags-find-virtuals-at-point)
-  (define-key c-mode-base-map (kbd "C-c r [") 'rtags-location-stack-back)
-  (define-key c-mode-base-map (kbd "C-c r ]") 'rtags-location-stack-forward)
-  (define-key c-mode-base-map (kbd "C-c r i") 'rtags-display-summary)
-  (define-key c-mode-base-map (kbd "C-c r C-r") 'rtags-rename-symbol) ;; might be dangerous
-  (define-key c-mode-base-map (kbd "C-c r C-x C-f") 'rtags-find-file) ;; Not very helpful though
-  (define-key c-mode-base-map (kbd "C-c r x") 'rtags-restart-process))
+  (define-key c-mode-base-map (kbd "C-c r d")       'rtags-diagnostics)
+  (define-key c-mode-base-map (kbd "C-c r t")       'rtags-taglist)
+  (define-key c-mode-base-map (kbd "C-c r r")       'rtags-find-references-at-point)
+  (define-key c-mode-base-map (kbd "C-c r F")       'rtags-fix-fixit-at-point)
+  (define-key c-mode-base-map (kbd "C-c r f")       'rtags-find-symbol-at-point)
+  (define-key c-mode-base-map (kbd "C-c r v")       'rtags-find-virtuals-at-point)
+  (define-key c-mode-base-map (kbd "C-c r [")       'rtags-location-stack-back)
+  (define-key c-mode-base-map (kbd "C-c r ]")       'rtags-location-stack-forward)
+  (define-key c-mode-base-map (kbd "C-c r i")       'rtags-display-summary)
+  (define-key c-mode-base-map (kbd "C-c r m")       'rtags-imenu)
+  (define-key c-mode-base-map (kbd "C-c r R")     'rtags-rename-symbol) ;; might be dangerous
+  (define-key c-mode-base-map (kbd "C-c r x")       'rtags-restart-process))
 
 ;; Set up Irony
 (when my/company-use-irony
