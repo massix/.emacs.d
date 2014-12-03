@@ -128,46 +128,39 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
                                                 (file-name-directory buffer-file-name)))))
     (concat ke/bear-path " -o " full-path "/compile_commands.json -- ")))
 
+
+(defmacro ke/create-function (argument)
+  `(defun ,(intern (concat "ke/compile-" argument)) (&optional prefix)
+     "KE Compilation System, calls 'compile without cluttering the default values"
+     (interactive "P")
+     (if prefix
+         (ke/compile ,argument 2 nil nil (ke/generate-bear-command))
+       (ke/compile ,argument 2 t))))
+
+(ke/create-function "clean")
+(ke/create-function "all")
+(ke/create-function "check")
+(ke/create-function "deb-main-deploy")
+
+
 (require 'cc-mode)
-(define-key dired-mode-map (kbd "C-c k k")
-  (lambda (&optional prefix)
-    (interactive "P")
-    (if prefix
-        (ke/compile "all" 2 nil nil (ke/generate-bear-command))
-      (ke/compile "all" 2 t))))
 
-(define-key c-mode-base-map (kbd "C-c k m")
-  (lambda (&optional prefix)
-    (interactive "P")
-    (if prefix
-        (ke/compile "all" 2 nil nil (ke/generate-bear-command))
-      (ke/compile "all" 2 t))))
+;; Dired mappings
+(define-key dired-mode-map (kbd "C-c k k") 'ke/compile)
+(define-key dired-mode-map (kbd "C-c k m") 'ke/compile-all)
+(define-key dired-mode-map (kbd "C-c k c") 'ke/compile-clean)
+(define-key dired-mode-map (kbd "C-c k t") 'ke/compile-check)
+(define-key dired-mode-map (kbd "C-c k d") 'ke/compile-deb-main-deploy)
+(define-key dired-mode-map (kbd "C-c k o") 'ke/run-opinel-command)
+(define-key dired-mode-map (kbd "C-c k r") 'ke/reset-opinel-environment)
 
-(define-key c-mode-base-map (kbd "C-c k c")
-  (lambda (&optional prefix)
-    (interactive "P")
-    (if prefix
-        (ke/compile "clean" 2 nil nil (ke/generate-bear-command))
-      (ke/compile "clean" 2 t))))
-
-(define-key c-mode-base-map (kbd "C-c k t")
-  (lambda (&optional prefix)
-    (interactive "P")
-    (if prefix
-        (ke/compile "check" 2 nil nil (ke/generate-bear-command))
-      (ke/compile "check" 2 t))))
-
+;; C/C++ mappings
+(define-key c-mode-base-map (kbd "C-c k k") 'ke/compile)
+(define-key c-mode-base-map (kbd "C-c k m") 'ke/compile-all)
+(define-key c-mode-base-map (kbd "C-c k c") 'ke/compile-clean)
+(define-key c-mode-base-map (kbd "C-c k t") 'ke/compile-check)
+(define-key c-mode-base-map (kbd "C-c k d") 'ke/compile-deb-main-deploy)
 (define-key c-mode-base-map (kbd "C-c k o") 'ke/run-opinel-command)
 (define-key c-mode-base-map (kbd "C-c k r") 'ke/reset-opinel-environment)
-
-(define-key c-mode-base-map (kbd "C-c k d")
-  (lambda () (interactive) (ke/compile "deb-main-deploy" 2 t)))
-
-(define-key c-mode-base-map (kbd "C-c k k")
-  (lambda () (interactive) (ke/compile "" 2 t)))
-
-;; Special compilation command to generate the .clang_complete file
-(define-key c-mode-base-map (kbd "C-c k 0 m")
-  (lambda () (interactive) (ke/compile "all" 2 nil "~/.emacs.d/cc_args.py $(which colorg++)")))
 
 (provide 'init-orange)
