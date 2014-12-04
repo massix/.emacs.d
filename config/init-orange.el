@@ -1,5 +1,7 @@
 ;; init-orange.el -- Inits some random functions I use at work
 
+(require 'cl) ;; Common Lisp FTW.
+
 (defcustom ke/naughty-notifier-active
   nil
   "Set to true if you want to use the naughty notifier"
@@ -14,6 +16,11 @@
 (defcustom ke/default-prefix
   "\C-ck"
   "Default prefix for KE specific commands"
+  :group 'my/dotemacs)
+
+(defcustom ke/opinel-prefix
+  "\C-co"
+  "Default prefix for Opinel commands"
   :group 'my/dotemacs)
 
 (defun ke/setup-path ()
@@ -34,6 +41,7 @@
   :group 'my/dotemacs)
 
 (defvar ke/opinel-environment nil)
+(defvar ke/opinel-filter nil)
 
 (defmacro ke/with-compilation-path (&rest body)
   (let ((current-path (getenv "PATH")))
@@ -84,7 +92,7 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
       (lambda (arg0 arg1)
         (ke/notify (format "Compilation is over ['%s']" (ke/trim-string arg1)))))
 
-(defun ke/compile (argument &optional parallel-jobs silent alternative-compiler pre-make)
+(cl-defun ke/compile (argument &key (parallel-jobs 2) (silent t) (alternative-compiler nil) (pre-make nil))
   "KE Compilation System, calls 'compile without cluttering the default values"
   (interactive "sTarget: ")
   (ke/with-compilation-path
@@ -105,13 +113,14 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
 
 (defun ke/reset-opinel-environment (environment)
   "Allows to reset the ke/opinel-environment variable"
-  (interactive "sEnvironment: ")
+  (interactive "sEnvironment: " ke/opinel-environment)
   (setq ke/opinel-environment environment))
 
-(defun ke/run-opinel-command (command &optional filter)
+(cl-defun ke/run-opinel-command (command &optional (ask-for-filter t))
   "Run an opinel command using the stored ke/opinel-environment or
    asking for one if it is not set"
   (interactive "sCommand: ")
+  (if ask-for-filter (setq ke/opinel-filter (read-from-minibuffer "Filter: " ke/opinel-filter)))
   (let* ((ke/project-root (concat (car (ke/find-root-dir (file-name-directory buffer-file-name) ".bzr")) "/../"))
          (ke/opinel-bin (concat ke/project-root "ke-opinel/src/opinel"))
          (buffer (get-buffer-create ke/opinel-buffer-name)))
@@ -120,10 +129,20 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
     (with-current-buffer buffer
       (async-shell-command (format "%s %s --env=%s %s"
                                    ke/opinel-bin
-                                   (if filter (format "-g role:%s" filter) "")
+                                   (if (not (string-empty-p ke/opinel-filter)) (format "-g role:%s" ke/opinel-filter) "")
                                    ke/opinel-environment
                                    command) buffer)
       (read-only-mode))))
+
+(defun ke/run-opinel-remote-command (command)
+  "Convenient wrapper to run cmd -- command"
+  (interactive "sCommand: ")
+  (ke/run-opinel-command (format "cmd -- %s" command)))
+
+(defun ke/opinel-get-services-status ()
+  (interactive)
+  (setq ke/opinel-filter "")
+  (ke/run-opinel-command "cmd -- /ke/scripts/ke status" nil))
 
 ;; Set the bear command
 (defun ke/generate-bear-command ()
@@ -139,14 +158,17 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
      "KE Compilation System, calls 'compile without cluttering the default values"
      (interactive "P")
      (if prefix
-         (ke/compile ,argument 2 nil nil (ke/generate-bear-command))
-       (ke/compile ,argument 2 t))))
+         (ke/compile ,argument :pre-make (ke/generate-bear-command))
+       (ke/compile ,argument))))
+
+(defmacro ke/bind-key-to-dired-and-c-map (key symbol)
+  `((define-key dired-mode-map ,key ,symbol)
+    (define-key c-mode-base-map ,key ,symbol)))
 
 (ke/create-function "clean")
 (ke/create-function "all")
 (ke/create-function "check")
 (ke/create-function "deb-main-deploy")
-
 
 (require 'cc-mode)
 
@@ -156,8 +178,8 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
 (define-key dired-mode-map (concat ke/default-prefix "c") 'ke/compile-clean)
 (define-key dired-mode-map (concat ke/default-prefix "t") 'ke/compile-check)
 (define-key dired-mode-map (concat ke/default-prefix "d") 'ke/compile-deb-main-deploy)
-(define-key dired-mode-map (concat ke/default-prefix "o") 'ke/run-opinel-command)
-(define-key dired-mode-map (concat ke/default-prefix "r") 'ke/reset-opinel-environment)
+(define-key dired-mode-map (concat ke/opinel-prefix "o") 'ke/run-opinel-command)
+(define-key dired-mode-map (concat ke/opinel-prefix "r") 'ke/reset-opinel-environment)
 
 ;; C/C++ mappings
 (define-key c-mode-base-map (concat ke/default-prefix "k") 'ke/compile)
@@ -165,7 +187,8 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
 (define-key c-mode-base-map (concat ke/default-prefix "c") 'ke/compile-clean)
 (define-key c-mode-base-map (concat ke/default-prefix "t") 'ke/compile-check)
 (define-key c-mode-base-map (concat ke/default-prefix "d") 'ke/compile-deb-main-deploy)
-(define-key c-mode-base-map (concat ke/default-prefix "o") 'ke/run-opinel-command)
-(define-key c-mode-base-map (concat ke/default-prefix "r") 'ke/reset-opinel-environment)
+(define-key c-mode-base-map (concat ke/opinel-prefix "o") 'ke/run-opinel-command)
+(define-key c-mode-base-map (concat ke/opinel-prefix "r") 'ke/reset-opinel-environment)
+
 
 (provide 'init-orange)

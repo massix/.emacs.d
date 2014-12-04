@@ -1,5 +1,6 @@
 #!/bin/bash
 EMACSCLIENT=$(which emacsclient)
+arguments=""
 
 # Depending on the link used, open either the gui or the terminal
 if [[ $(basename $0) = "e" ]]; then
@@ -15,13 +16,11 @@ else
 fi
 
 if [[ $(basename $0) = "ecd" ]]; then
-    dir=$(${HOME}/bin/eeval '(file-name-directory (buffer-file-name (window-buffer)))' | tr -d \")
-    echo $dir
+    ${HOME}/bin/eeval '(file-name-directory (buffer-file-name (window-buffer)))' | tr -d \"
 fi
 
 if [[ $(basename $0) = "efile" ]]; then
-    file=$(${HOME}/bin/eeval '(buffer-file-name (window-buffer))' | tr -d \")
-    echo $file
+    ${HOME}/bin/eeval '(buffer-file-name (window-buffer))' | tr -d \"
 fi
 
 # Avoid running the emacsclient for ecd and efile `functions'
