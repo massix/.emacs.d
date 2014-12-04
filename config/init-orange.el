@@ -116,28 +116,31 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
   (interactive "sEnvironment: " ke/opinel-environment)
   (setq ke/opinel-environment environment))
 
-(cl-defun ke/run-opinel-command (command &optional (ask-for-filter t))
+(cl-defun ke/run-opinel-command (command &optional ask-for-filter)
   "Run an opinel command using the stored ke/opinel-environment or
    asking for one if it is not set"
-  (interactive "sCommand: ")
+  (interactive "sCommand: \nP")
   (if ask-for-filter (setq ke/opinel-filter (read-from-minibuffer "Filter: " ke/opinel-filter)))
-  (let* ((ke/project-root (concat (car (ke/find-root-dir (file-name-directory buffer-file-name) ".bzr")) "/../"))
+  (let* ((filter (if ask-for-filter ke/opinel-filter nil))
+         (ke/project-root (concat (car (ke/find-root-dir (file-name-directory buffer-file-name) ".bzr")) "/../"))
          (ke/opinel-bin (concat ke/project-root "ke-opinel/src/opinel"))
          (buffer (get-buffer-create ke/opinel-buffer-name)))
-    (if (eq nil ke/opinel-environment)
+    (if (null ke/opinel-environment)
         (setq ke/opinel-environment (read-from-minibuffer "Environment name: ")))
     (with-current-buffer buffer
       (async-shell-command (format "%s %s --env=%s %s"
                                    ke/opinel-bin
-                                   (if (not (string-empty-p ke/opinel-filter)) (format "-g role:%s" ke/opinel-filter) "")
+                                   (if ask-for-filter
+                                       (format "-g role:%s" filter)
+                                     "")
                                    ke/opinel-environment
                                    command) buffer)
       (read-only-mode))))
 
-(defun ke/run-opinel-remote-command (command)
+(defun ke/run-opinel-remote-command (command &optional ask-for-filter)
   "Convenient wrapper to run cmd -- command"
-  (interactive "sCommand: ")
-  (ke/run-opinel-command (format "cmd -- %s" command)))
+  (interactive "sCommand: \nP")
+  (ke/run-opinel-command (format "cmd -- %s" command) ask-for-filter))
 
 (defun ke/opinel-get-services-status ()
   (interactive)
@@ -152,8 +155,7 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
                                                 (file-name-directory buffer-file-name)))))
     (concat ke/bear-path " -o " full-path "/compile_commands.json -- ")))
 
-
-(defmacro ke/create-function (argument)
+(defmacro ke/create-compilation-function (argument)
   `(defun ,(intern (concat "ke/compile-" argument)) (&optional prefix)
      "KE Compilation System, calls 'compile without cluttering the default values"
      (interactive "P")
@@ -165,10 +167,10 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
   `(define-key dired-mode-map (concat ,prefix ,key) ,symbol)
   `(define-key c-mode-base-map (concat ,prefix ,key) ,symbol))
 
-(ke/create-function "clean")
-(ke/create-function "all")
-(ke/create-function "check")
-(ke/create-function "deb-main-deploy")
+(ke/create-compilation-function "clean")
+(ke/create-compilation-function "all")
+(ke/create-compilation-function "check")
+(ke/create-compilation-function "deb-main-deploy")
 
 (require 'cc-mode)
 
@@ -184,6 +186,7 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
 ;; Opinel
 (ke/bind-key-to-dired-and-c-map ke/opinel-prefix "o" 'ke/run-opinel-command)
 (ke/bind-key-to-dired-and-c-map ke/opinel-prefix "r" 'ke/reset-opinel-environment)
-
+(ke/bind-key-to-dired-and-c-map ke/opinel-prefix "s" 'ke/opinel-get-services-status)
+(ke/bind-key-to-dired-and-c-map ke/opinel-prefix "x" 'ke/run-opinel-remote-command)
 
 (provide 'init-orange)
