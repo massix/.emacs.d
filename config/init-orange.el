@@ -2,11 +2,10 @@
 
 (require 'cl) ;; Common Lisp FTW.
 
-(defcustom ke/naughty-notifier-active
+(defcustom ke/messages-notifier
   nil
-  "Set to true if you want to use the naughty notifier"
-  :group 'my/dotemacs
-  :type 'boolean)
+  "Accepted values are 'naughty or 'stumpish"
+  :group 'my/dotemacs)
 
 (defcustom ke/bear-path
   "~/dev/Bear/build/src/bear"
@@ -53,11 +52,11 @@
 
 (defun ke/notify (text)
   (interactive "sInsert the text of the notification: ")
-  (when ke/naughty-notifier-active
-    (let ((command (format
-                    "echo \"naughty.notify({ text = \\\"%s\\\", timeout = 10 })\" | $(which awesome-client)" text)))
-      (message command)
-      (shell-command command))))
+  (cond
+   ((eq ke/messages-notifier 'stumpish)
+    (shell-command (format "stumpish echo \"%s\"" text)))
+   ((eq ke/messages-notifier 'naughty)
+    (shell-command (format "echo \"naughty.notify({ text = \\\"%s\\\", timeout = 10 })\" | $(which awesome-client)" text)))))
 
 (defun ke/trim-string (string)
   "Remove white spaces in beginning and ending of STRING.
