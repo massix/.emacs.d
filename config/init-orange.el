@@ -161,9 +161,9 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
          (ke/compile ,argument :pre-make (ke/generate-bear-command))
        (ke/compile ,argument))))
 
-(defmacro ke/bind-key-to-dired-and-c-map (key symbol)
-  `((define-key dired-mode-map ,key ,symbol)
-    (define-key c-mode-base-map ,key ,symbol)))
+(defmacro ke/bind-key-to-dired-and-c-map (prefix key symbol)
+  `(define-key dired-mode-map (concat ,prefix ,key) ,symbol)
+  `(define-key c-mode-base-map (concat ,prefix ,key) ,symbol))
 
 (ke/create-function "clean")
 (ke/create-function "all")
@@ -172,23 +172,18 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
 
 (require 'cc-mode)
 
-;; Dired mappings
-(define-key dired-mode-map (concat ke/default-prefix "k") 'ke/compile)
-(define-key dired-mode-map (concat ke/default-prefix "m") 'ke/compile-all)
-(define-key dired-mode-map (concat ke/default-prefix "c") 'ke/compile-clean)
-(define-key dired-mode-map (concat ke/default-prefix "t") 'ke/compile-check)
-(define-key dired-mode-map (concat ke/default-prefix "d") 'ke/compile-deb-main-deploy)
-(define-key dired-mode-map (concat ke/opinel-prefix "o") 'ke/run-opinel-command)
-(define-key dired-mode-map (concat ke/opinel-prefix "r") 'ke/reset-opinel-environment)
+;; Map keys
 
-;; C/C++ mappings
-(define-key c-mode-base-map (concat ke/default-prefix "k") 'ke/compile)
-(define-key c-mode-base-map (concat ke/default-prefix "m") 'ke/compile-all)
-(define-key c-mode-base-map (concat ke/default-prefix "c") 'ke/compile-clean)
-(define-key c-mode-base-map (concat ke/default-prefix "t") 'ke/compile-check)
-(define-key c-mode-base-map (concat ke/default-prefix "d") 'ke/compile-deb-main-deploy)
-(define-key c-mode-base-map (concat ke/opinel-prefix "o") 'ke/run-opinel-command)
-(define-key c-mode-base-map (concat ke/opinel-prefix "r") 'ke/reset-opinel-environment)
+;; Compilation
+(ke/bind-key-to-dired-and-c-map ke/default-prefix "k" 'ke/compile)
+(ke/bind-key-to-dired-and-c-map ke/default-prefix "m" 'ke/compile-all)
+(ke/bind-key-to-dired-and-c-map ke/default-prefix "c" 'ke/compile-clean)
+(ke/bind-key-to-dired-and-c-map ke/default-prefix "t" 'ke/compile-check)
+(ke/bind-key-to-dired-and-c-map ke/default-prefix "d" 'ke/compile-deb-main-deploy)
+
+;; Opinel
+(ke/bind-key-to-dired-and-c-map ke/opinel-prefix "o" 'ke/run-opinel-command)
+(ke/bind-key-to-dired-and-c-map ke/opinel-prefix "r" 'ke/reset-opinel-environment)
 
 
 (provide 'init-orange)
