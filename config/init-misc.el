@@ -59,6 +59,10 @@
 
 (require-package 'discover-my-major)
 
+(require-package 'popwin)
+(require 'popwin)
+(popwin-mode 1)
+
 
 ;; Setup PATH correctly on MacBook
 (when my/is-a-mac

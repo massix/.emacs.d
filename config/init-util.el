@@ -79,7 +79,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   "Replace the preceding sexp with its value."
   (interactive)
   (let ((value (eval (preceding-sexp))))
-    (backware-kill-sexp)
+    (backward-kill-sexp)
     (insert (format "%s" value))))
 
 
