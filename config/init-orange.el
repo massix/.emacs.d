@@ -45,10 +45,11 @@
 
 (defmacro ke/with-compilation-path (&rest body)
   (let ((current-path (getenv "PATH")))
-    (ke/setup-path)
     `(unwind-protect
-         (progn ,@body)
-       (setenv "PATH" ,current-path))))
+         (progn
+           (ke/setup-path)
+           ,@body
+           (setenv "PATH" ,current-path)))))
 
 (defun ke/notify (text)
   (interactive "sInsert the text of the notification: ")
@@ -164,8 +165,10 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
        (ke/compile ,argument))))
 
 (defmacro ke/bind-key-to-dired-and-c-map (prefix key symbol)
-  `(define-key dired-mode-map (concat ,prefix ,key) ,symbol)
-  `(define-key c-mode-base-map (concat ,prefix ,key) ,symbol))
+  "Binds the same key to both dired and c-mode"
+  `(progn
+     (define-key dired-mode-map (concat ,prefix ,key) ,symbol)
+     (define-key c-mode-base-map (concat ,prefix ,key) ,symbol)))
 
 (ke/create-compilation-function "clean")
 (ke/create-compilation-function "all")
@@ -173,8 +176,6 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
 (ke/create-compilation-function "deb-main-deploy")
 
 (require 'cc-mode)
-
-;; Map keys
 
 ;; Compilation
 (ke/bind-key-to-dired-and-c-map ke/default-prefix "k" 'ke/compile)
