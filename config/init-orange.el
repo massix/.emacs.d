@@ -29,10 +29,6 @@
                   "/ke/local/toolchain3-x86_64-nptl/tools/bin:"
                   "/ke/local/toolchain3-x86_64-nptl/tools/java/jdk1.6.0_13/bin:"
                   "/ke/local/toolchain3-x86_64-nptl/tools/java/ant-1.7.0/bin:"
-                  "/ke/local/toolchain3-x86_64-nptl/bin:"
-                  "/ke/local/toolchain3-x86_64-nptl/tools/bin:"
-                  "/ke/local/toolchain3-x86_64-nptl/tools/java/jdk1.6.0_13/bin:"
-                  "/ke/local/toolchain3-x86_64-nptl/tools/java/ant-1.7.0/bin:"
                   (getenv "PATH"))))
 
 (defcustom ke/opinel-buffer-name "*Opinel Output*"
