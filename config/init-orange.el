@@ -92,13 +92,17 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
       (lambda (arg0 arg1)
         (ke/notify (format "Compilation is over ['%s']" (ke/trim-string arg1)))))
 
+(defun ke/pwd ()
+  (cond
+   ((eq major-mode 'dired-mode) (dired-current-directory))
+   ((eq major-mode 'eshell-mode) (eshell/pwd))
+   (t (file-name-directory buffer-file-name))))
+
 (cl-defun ke/compile (argument &key (parallel-jobs 2) (silent t) (alternative-compiler nil) (pre-make nil))
   "KE Compilation System, calls 'compile without cluttering the default values"
   (interactive "sTarget: ")
   (ke/with-compilation-path
-   (let* ((full-path (ke/find-where-to-compile (if (eq major-mode 'dired-mode)
-                                                   (dired-current-directory)
-                                                 (file-name-directory buffer-file-name))))
+   (let* ((full-path (ke/find-where-to-compile (ke/pwd)))
           (compile-command (concat pre-make " make -C \""
                                    full-path
                                    "\" "
@@ -150,9 +154,7 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
 ;; Set the bear command
 (defun ke/generate-bear-command ()
   "Return a compatible bear command for the buffer"
-  (let* ((full-path (ke/find-where-to-compile (if (eq major-mode 'dired-mode)
-                                                  (dired-current-directory)
-                                                (file-name-directory buffer-file-name)))))
+  (let* ((full-path (ke/find-where-to-compile (ke/pwd))))
     (concat ke/bear-path " -o " full-path "/compile_commands.json -- ")))
 
 (defmacro ke/create-compilation-function (argument)
@@ -175,6 +177,7 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
 (ke/create-compilation-function "deb-main-deploy")
 
 (require 'cc-mode)
+(require 'eshell)
 
 ;; Compilation
 (ke/bind-key-to-dired-and-c-map ke/default-prefix "k" 'ke/compile)
@@ -188,5 +191,9 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
 (ke/bind-key-to-dired-and-c-map ke/opinel-prefix "r" 'ke/reset-opinel-environment)
 (ke/bind-key-to-dired-and-c-map ke/opinel-prefix "s" 'ke/opinel-get-services-status)
 (ke/bind-key-to-dired-and-c-map ke/opinel-prefix "x" 'ke/run-opinel-remote-command)
+
+;; Eshell
+(defun eshell/ke-compile (argument)
+  (ke/compile argument :pre-make (ke/generate-bear-command)))
 
 (provide 'init-orange)
