@@ -12,6 +12,11 @@
   "Set this to the location of your Bear binary"
   :group 'my/dotemacs)
 
+(defcustom ke/cc_args-path
+  "~/.emacs.d/cc_args.py"
+  "Set this to the path to the cc_args.py binary"
+  :group 'my/dotemacs)
+
 (defcustom ke/default-prefix
   "\C-ck"
   "Default prefix for KE specific commands"
@@ -80,9 +85,7 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
   "Finds the topmost .bzr and then it descends in the .release subfolder
    to look for a suitable Makefile to use"
   (let ((root-path (ke/find-root-dir path ".bzr")))
-    (car (ke/find-root-dir
-          (concat (car root-path) "/.release/" (car (cdr root-path)))
-          "Makefile"))))
+    (car (ke/find-root-dir (concat (car root-path) "/.release/" (car (cdr root-path))) "Makefile"))))
 
 (setq compilation-finish-functions
       (lambda (arg0 arg1)
@@ -151,15 +154,16 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
 (defun ke/generate-bear-command ()
   "Return a compatible bear command for the buffer"
   (let* ((full-path (ke/find-where-to-compile (ke/pwd))))
-    (concat ke/bear-path " -o " full-path "/compile_commands.json -- ")))
+    (concat ke/bear-path " -o " full-path "compile_commands.json -- ")))
 
 (defmacro ke/create-compilation-function (argument)
   `(defun ,(intern (concat "ke/compile-" argument)) (&optional prefix)
      "KE Compilation System, calls 'compile without cluttering the default values"
-     (interactive "P")
-     (if prefix
-         (ke/compile ,argument :pre-make (ke/generate-bear-command))
-       (ke/compile ,argument))))
+     (interactive "p")
+     (cond
+      ((eq prefix 4) (ke/compile ,argument :alternative-compiler (concat ke/cc_args-path " colorg++")))
+      ((eq prefix 16) (ke/compile ,argument :pre-make (ke/generate-bear-command)))
+      (t (ke/compile ,argument)))))
 
 (defmacro ke/bind-key-to-dired-and-c-map (prefix key symbol)
   "Binds the same key to both dired and c-mode"

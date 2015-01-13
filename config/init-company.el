@@ -71,17 +71,25 @@
 ;; Set up Irony
 (when my/company-use-irony
   (require-package 'company-irony)
+  (require-package 'irony-eldoc)
+  (require-package 'flycheck-irony)
+
   (require 'company-irony)
+  (require 'irony-eldoc)
+  (require 'flycheck-irony)
+
   (add-to-list 'company-backends 'company-irony)
-  (defun my/irony-mode-hook ()
-    "Replace the `completion-at-point' and `complete-symbol' bindings in
-   irony-mode's buffers by irony-mode's function"
-    (define-key irony-mode-map [remap completion-at-point]
-      'irony-completion-at-point-async)
-    (define-key irony-mode-map [remap complete-symbol]
-      'irony-completion-at-point-async))
+
+  (define-key irony-mode-map (kbd "C-c M-b") 'irony-cdb-autosetup-compile-options)
   (define-key irony-mode-map (kbd "C-c C-b") 'irony-cdb-menu)
-  (add-hook 'irony-mode-hook 'my-irony-mode-hook))
+
+  (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands)
+  (add-hook 'irony-mode-hook 'irony-eldoc)
+  (add-hook 'irony-mode-hook 'flycheck-mode)
+  (eval-after-load 'flycheck '(add-to-list 'flycheck-checkers 'irony))
+  (add-hook 'c++-mode-hook 'irony-mode)
+  (add-hook 'c-mode-hook 'irony-mode))
+
 
 (global-company-mode)
 (provide 'init-company)
