@@ -174,6 +174,23 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
       (dolist (process processes nil)
         (insert "Process " (process-name process) " running\n")))))
 
+(defun ke/bootstrap-component (component branch)
+  "Bootstrap a component"
+  (interactive "sComponent: \nsBranch: ")
+  (let* ((toolchain-directory "/ke/local/toolchain3-x86_64-nptl")
+         (root-directory (expand-file-name (concat "~/dev/" branch "/" component "/")))
+         (common-directory (expand-file-name "../ke-common" root-directory))
+         (kemake-directory (expand-file-name "../ke-kemake" root-directory))
+         (default-directory (expand-file-name (concat root-directory ".release/"))))
+    (if (not (file-exists-p default-directory))
+        (make-directory default-directory))
+    (let ((command (concat (expand-file-name "../configure" default-directory) " "
+                           "--with-toolchain-dir=" toolchain-directory " "
+                           "--with-kemake-dir=" kemake-directory " "
+                           "--with-common-lib=" common-directory "/.release "
+                           "--with-common-include=" common-directory " &")))
+      (shell-command command "*configure-buffer*"))))
+
 (defmacro ke/create-compilation-function (argument)
   `(defun ,(intern (concat "ke/compile-" argument)) (&optional prefix)
      "KE Compilation System, calls 'compile without cluttering the default values"
