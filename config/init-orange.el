@@ -156,6 +156,24 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
   (let* ((full-path (ke/find-where-to-compile (ke/pwd))))
     (concat ke/bear-path " -o " full-path "compile_commands.json -- ")))
 
+(defun ke/prepare-dev (repositories-list branch &optional branch-only)
+  "Prepare a development branch with the specified arguments"
+  (interactive "sRepositories: \nsBranch: ")
+  (let* ((default-directory "/tmp/")
+         (repositories (split-string repositories-list " "))
+         (final-destination (concat default-directory branch "/"))
+         (processes))
+    (when (not (file-exists-p (concat default-directory branch)))
+      (make-directory (concat default-directory branch))
+      (dolist (repository repositories processes)
+        (let* ((source      (concat "mel:" repository))
+               (destination (concat final-destination repository))
+               (pname       (concat "bzr-branch:" repository)))
+          (setq processes (cons (start-process pname "*branching*" "bzr" "branch" source destination) processes))))
+      (switch-to-buffer "*branching*")
+      (dolist (process processes nil)
+        (insert "Process " (process-name process) " running\n")))))
+
 (defmacro ke/create-compilation-function (argument)
   `(defun ,(intern (concat "ke/compile-" argument)) (&optional prefix)
      "KE Compilation System, calls 'compile without cluttering the default values"
