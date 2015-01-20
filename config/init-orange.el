@@ -229,6 +229,6 @@ White space here is any of: space, tab, emacs newline (line feed, ASCII 10)."
 
 ;; Eshell
 (defun eshell/ke-compile (argument)
-  (ke/compile argument :pre-make (ke/generate-bear-command)))
+  (ke/compile argument))
 
 (provide 'init-orange)
