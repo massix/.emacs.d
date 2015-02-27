@@ -82,7 +82,7 @@
 
   (define-key irony-mode-map (kbd "C-c M-b") 'irony-cdb-autosetup-compile-options)
   (define-key irony-mode-map (kbd "C-c C-b") 'irony-cdb-menu)
-
+  (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
   (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands)
   (add-hook 'irony-mode-hook 'irony-eldoc)
   (add-hook 'irony-mode-hook 'flycheck-mode)

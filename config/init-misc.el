@@ -35,14 +35,8 @@
 (define-key global-map (kbd "C-=") 'er/expand-region)
 (define-key global-map (kbd "C--") 'er/contract-region)
 
-
 (require-package 'editorconfig)
 (require 'editorconfig)
-
-(require-package 'aggressive-indent)
-(require 'aggressive-indent)
-(add-to-list 'aggressive-indent-excluded-modes 'org-mode)
-(global-aggressive-indent-mode)
 
 (require-package 'windsize)
 (require 'windsize)
@@ -58,11 +52,6 @@
 (setq framemove-hook-into-windmove t)
 
 (require-package 'discover-my-major)
-
-(require-package 'popwin)
-(require 'popwin)
-(popwin-mode 1)
-
 
 ;; Setup PATH correctly on MacBook
 (when my/is-a-mac

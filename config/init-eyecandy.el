@@ -34,7 +34,6 @@
 (setq sml/show-eol t)
 (setq sml/show-frame-identification t)
 
-(load-theme 'zenburn)
 (sml/setup)
 (sml/apply-theme 'respectful)
 
