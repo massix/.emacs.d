@@ -2,10 +2,12 @@
 
 (require-package 'company)
 (require-package 'company-c-headers)
+(require-package 'company-irony-c-headers)
 (require 'cc-mode)
 
 (require 'company)
 (require 'company-c-headers)
+(require 'company-irony-c-headers)
 
 (defcustom my/company-use-rtags t
   "Set to nil if you do not want to use rtags"
@@ -88,8 +90,11 @@
   (add-hook 'irony-mode-hook 'flycheck-mode)
   (eval-after-load 'flycheck '(add-to-list 'flycheck-checkers 'irony))
   (add-hook 'c++-mode-hook 'irony-mode)
+  ;; Load with `irony-mode` as a grouped backend
+  (eval-after-load 'company
+    '(add-to-list
+      'company-backends 'company-irony-c-headers))
   (add-hook 'c-mode-hook 'irony-mode))
-
 
 (global-company-mode)
 (provide 'init-company)
