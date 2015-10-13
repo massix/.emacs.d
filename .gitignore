@@ -7,4 +7,8 @@ custom.el
 *.elc
 smex-items
 games/
-
+.clang_complete
+*~
+irony/
+network-security.data
+tramp
