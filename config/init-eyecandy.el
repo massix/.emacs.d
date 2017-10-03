@@ -35,7 +35,6 @@
 (setq sml/show-frame-identification t)
 
 (sml/setup)
-(sml/apply-theme 'respectful)
 
 (when (fboundp 'global-prettify-symbols-mode)
   (progn
